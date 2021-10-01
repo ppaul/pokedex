@@ -1,3 +1,3 @@
-import Pokemon from "./pokemon";
+import Pokemon from "./pokemon.container";
 
 export default Pokemon;

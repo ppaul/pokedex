@@ -1,1 +1,3 @@
+export const AUTH_LOGIN = "AUTH_LOGIN";
+export const AUTH_LOGOUT = "AUTH_LOGOUT";
 export const POKEDEX_SAMPLE_ACTION = "POKEDEX_SAMPLE_ACTION";
