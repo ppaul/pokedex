@@ -3,6 +3,6 @@ import authReducer from "./auth-reducer";
 import pokedexReducer from "./pokedex-reducer";
 
 export default combineReducers({
-  authReducer,
-  pokedexReducer
+  auth: authReducer,
+  pokedex: pokedexReducer,
 });

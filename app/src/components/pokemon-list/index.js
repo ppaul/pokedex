@@ -1,3 +1,3 @@
 import PokemonList from "./pokemon-list";
-
-export default PokemonList;
+import withHeader from "../header";
+export default withHeader(PokemonList);

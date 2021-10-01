@@ -1,3 +1,4 @@
-import Pokemon from "./pokemon.container";
+import Pokemon from "./pokemon";
+import withHeader from "../header";
 
-export default Pokemon;
+export default withHeader(Pokemon);

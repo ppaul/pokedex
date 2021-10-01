@@ -7,6 +7,7 @@ module.exports = {
       "@": path.resolve(__dirname, "src/"),
       "@Components": path.resolve(__dirname, "src/components"),
       "@Actions": path.resolve(__dirname, "src/actions"),
+      "@Shared": path.resolve(__dirname, "src/shared"),
     },
   },
 };

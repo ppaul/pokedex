@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-const Pokemon = ({ username, token }) => {
+const Pokemon = () => {
   const { id } = useParams();
   const [pokemonDetails, setPokemonDetails] = useState({});
+
   useEffect(() => {
     (async () => {
       const response = await fetch(
@@ -21,11 +22,8 @@ const Pokemon = ({ username, token }) => {
 
   const { abilities, name, sprites, weight } = pokemonDetails;
 
-  return token ? (
+  return (
     <div>
-      <Link to="/pokemon">
-        <div>Home</div>
-      </Link>
       <h1>{name}</h1>
       {abilities?.length && (
         <>
@@ -41,19 +39,6 @@ const Pokemon = ({ username, token }) => {
         </>
       )}
       <div>weight: {weight}</div>
-      <footer>
-        <h6>logged user: {username}</h6>
-      </footer>
-    </div>
-  ) : (
-    <div>
-      Please{" "}
-      <Link
-        to={{ pathname: "/login", state: { returnToPath: `/pokemon/${id}` } }}
-      >
-        Login
-      </Link>{" "}
-      to view Pokemon details
     </div>
   );
 };

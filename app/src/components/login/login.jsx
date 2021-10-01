@@ -12,6 +12,11 @@ const Login = ({ authLogin, authLogout }) => {
 
   const onPasswordChange = (event) => setPassword(event.target.value);
 
+  useEffect(() => {
+    localStorage.clear("token");
+    authLogout();
+  }, [authLogout]);
+
   const checkLogin = async () => {
     const response = await fetch("/api/login", {
       method: "POST",
@@ -28,6 +33,7 @@ const Login = ({ authLogin, authLogout }) => {
     if (data?.success) {
       const { username, token } = data;
       authLogin({ username, token });
+      localStorage.setItem("token", token);
       const { state } = location;
       if (state?.returnToPath) {
         history.push(state.returnToPath);
@@ -46,9 +52,15 @@ const Login = ({ authLogin, authLogout }) => {
       <input onChange={onEmailChange} value={email} placeholder="Email" />
       <div>Password</div>
       <input type="password" onChange={onPasswordChange} />
-      <button type="button" onClick={checkLogin} disabled={!email || !password}>
-        Login
-      </button>
+      <div>
+        <button
+          type="button"
+          onClick={checkLogin}
+          disabled={!email || !password}
+        >
+          Login
+        </button>
+      </div>
       <div>{error}</div>
     </div>
   );
