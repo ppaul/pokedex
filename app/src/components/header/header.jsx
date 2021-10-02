@@ -15,12 +15,19 @@ const linksStyle = css`
   display: flex;
 `;
 
+const linkStyle = css`
+  cursor: pointer;
+  margin-left: 20px;
+`;
+
 const Header = ({ history, username }) => (
   <header css={headerStyle}>
     <div>Hello, {username}</div>
     <div css={linksStyle}>
       <Link to="/pokemon">Home</Link>
-      <div onClick={history.goBack}>Back</div>
+      <div css={linkStyle} onClick={history.goBack}>
+        Back
+      </div>
     </div>
     <div>
       <Link to="/login">Logout</Link>

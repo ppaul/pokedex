@@ -21,6 +21,7 @@ const generationsStyle = css`
 
 const pokemonListStyle = css`
   display: flex;
+  flex-wrap: wrap;
   background: #2564ac;
   color: white;
 `;
@@ -28,6 +29,9 @@ const pokemonListStyle = css`
 const pokemonStyle = css`
   margin: 20px;
   color: white;
+  width: 200px;
+  height: 300px;
+  border: 1px solid grey;
 `;
 
 const getPokemonIdFromUrl = (url) => {
@@ -35,10 +39,40 @@ const getPokemonIdFromUrl = (url) => {
   return urlParts.slice(-2)[0];
 };
 
+const PokemonDetails = ({ name, url }) => {
+  const [details, setDetails] = useState({});
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(
+        url, // fetch pokemon details
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+      const data = await response.json();
+      setDetails(data);
+    })();
+  }, [url]);
+
+  const color = details?.color?.name;
+
+  return (
+    <div css={pokemonStyle} style={{ background: color }}>
+      <h2>{name}</h2>
+    </div>
+  );
+};
+
+const BATCH_SIZE = 6;
+
 const PokemonList = () => {
   const [characters, setCharacters] = useState([]);
   const [generations, setGenerations] = useState([]);
   const [selectedGeneration, setSelectedGeneration] = useState(null);
+  const [maxDisplayed, setMaxDisplayed] = useState(BATCH_SIZE);
 
   useEffect(() => {
     (async () => {
@@ -70,6 +104,7 @@ const PokemonList = () => {
         setCharacters(data.pokemon_species);
       }
     })();
+    setMaxDisplayed(BATCH_SIZE);
   }, [selectedGeneration]);
 
   return (
@@ -98,12 +133,22 @@ const PokemonList = () => {
       </div>
 
       <div css={pokemonListStyle}>
-        {characters.map((c) => (
+        {characters.slice(0, maxDisplayed).map((c) => (
           <Link to={`pokemon/${getPokemonIdFromUrl(c.url)}`} key={c.name}>
-            <div css={pokemonStyle}>{c.name}</div>
+            <PokemonDetails name={c.name} url={c.url} />
           </Link>
         ))}
       </div>
+      {maxDisplayed < characters.length && (
+        <div>
+          <button
+            type="button"
+            onClick={() => setMaxDisplayed(maxDisplayed + BATCH_SIZE)}
+          >
+            Load more
+          </button>
+        </div>
+      )}
     </div>
   );
 };
