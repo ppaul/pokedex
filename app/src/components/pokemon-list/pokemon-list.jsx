@@ -34,17 +34,28 @@ const pokemonListStyle = css`
 const pokemonStyle = css`
   margin: 20px;
   color: white;
-  width: 200px;
-  height: 300px;
+  width: 150px;
+  height: 210px;
   border: 1px solid grey;
 `;
 
+const pokemonNameStyle = css`
+  font-size: 24px;
+  font-weight: bold;
+`;
+
 const PokemonDetails = ({ details }) => {
-  const { color, name } = details;
+  const { color, id, name, sprites, types } = details;
 
   return (
     <div css={pokemonStyle} style={{ background: color }}>
-      <h2>{name}</h2>
+      <div css={pokemonNameStyle}>{name}</div>
+      <div>{id}</div>
+      {sprites?.front_default && (
+        <img src={sprites.front_default} alt="missing pic" />
+      )}
+      <div>Types</div>
+      {types.map(({ type }) => type.name).join(", ")}
     </div>
   );
 };

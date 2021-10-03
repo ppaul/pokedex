@@ -22,6 +22,7 @@ const Pokemon = () => {
   return (
     <div>
       <h1>{name}</h1>
+      <h6>{id}</h6>
       {abilities?.length && (
         <>
           <div>
