@@ -7,14 +7,11 @@ const Pokemon = () => {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch(
-        `/api/pokemon/${id}`, // fetch all generations
-        {
-          headers: {
-            Accept: "application/json",
-          },
+      const response = await fetch(`/api/pokemon/${id}`, {
+        headers: {
+          Accept: "application/json",
         },
-      );
+      });
       const data = await response.json();
       setPokemonDetails(data);
     })();

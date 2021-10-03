@@ -37,9 +37,19 @@ const Header = ({ history, username }) => (
 
 const withHeader =
   (Component) =>
-  ({ username, token }) => {
+  ({ authLogin, username, token }) => {
     const location = useLocation();
     const history = useHistory();
+
+    if (!token) {
+      const storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        authLogin({
+          username: localStorage.getItem("username"),
+          token: storedToken,
+        });
+      }
+    }
 
     return token ? (
       <>

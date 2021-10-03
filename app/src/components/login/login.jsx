@@ -34,6 +34,7 @@ const Login = ({ authLogin, authLogout }) => {
       const { username, token } = data;
       authLogin({ username, token });
       localStorage.setItem("token", token);
+      localStorage.setItem("username", username);
       const { state } = location;
       if (state?.returnToPath) {
         history.push(state.returnToPath);

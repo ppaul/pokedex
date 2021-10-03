@@ -36,9 +36,14 @@ app.get("/api/generation", async function (req, res) {
   res.json(data.results);
 });
 
+const getPokemonIdFromUrl = (url) => {
+  const urlParts = url.split("/");
+  return urlParts.slice(-2)[0];
+};
+
 app.get("/api/pokemon", async function (req, res) {
   const { query } = req;
-  const { generation, name, type } = query;
+  const { generation, name } = query;
   if (name) {
     console.log("poke with name: ", name);
     P.getPokemonByName(req.params.id, function (response, error) {
@@ -54,9 +59,29 @@ app.get("/api/pokemon", async function (req, res) {
     const response = await fetch(
       `https://pokeapi.co/api/v2/generation/${generation}`,
     );
+
     const data = await response.json();
-    const selectedData = generation === "all" ? data.pokemon_species : data;
-    res.json(selectedData);
+    if (generation === "all") {
+      res.json(data);
+    } else {
+      const { pokemon_species } = data;
+      const result = await Promise.allSettled(
+        pokemon_species.map(
+          ({ name }) =>
+            new Promise((resolve, reject) => {
+              P.getPokemonByName(name, function (response, error) {
+                if (!error) {
+                  resolve(response);
+                } else {
+                  reject(error);
+                }
+              });
+            }),
+        ),
+      );
+
+      res.json(result);
+    }
   }
 });
 

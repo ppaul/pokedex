@@ -19,6 +19,11 @@ const generationsStyle = css`
   font-size: 20px;
 `;
 
+const searchStyle = css`
+  text-align: start;
+  margin: 10px;
+`;
+
 const pokemonListStyle = css`
   display: flex;
   flex-wrap: wrap;
@@ -34,30 +39,8 @@ const pokemonStyle = css`
   border: 1px solid grey;
 `;
 
-const getPokemonIdFromUrl = (url) => {
-  const urlParts = url.split("/");
-  return urlParts.slice(-2)[0];
-};
-
-const PokemonDetails = ({ name, url }) => {
-  const [details, setDetails] = useState({});
-  useEffect(() => {
-    (async () => {
-      const response = await fetch(
-        url, // fetch pokemon details
-        {
-          headers: {
-            Accept: "application/json",
-          },
-        },
-      );
-
-      const data = await response.json();
-      setDetails(data);
-    })();
-  }, [url]);
-
-  const color = details?.color?.name;
+const PokemonDetails = ({ details }) => {
+  const { color, name } = details;
 
   return (
     <div css={pokemonStyle} style={{ background: color }}>
@@ -66,13 +49,12 @@ const PokemonDetails = ({ name, url }) => {
   );
 };
 
-const BATCH_SIZE = 6;
-
 const PokemonList = () => {
   const [characters, setCharacters] = useState([]);
   const [generations, setGenerations] = useState([]);
   const [selectedGeneration, setSelectedGeneration] = useState(null);
-  const [maxDisplayed, setMaxDisplayed] = useState(BATCH_SIZE);
+  const [loadingData, setLoadingData] = useState(false);
+  const [filterString, setFilterString] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -90,6 +72,9 @@ const PokemonList = () => {
   }, []);
 
   useEffect(() => {
+    if (selectedGeneration) {
+      setLoadingData(true);
+    }
     (async () => {
       if (selectedGeneration) {
         const response = await fetch(
@@ -101,15 +86,25 @@ const PokemonList = () => {
           },
         );
         const data = await response.json();
-        setCharacters(data.pokemon_species);
+        if (data.some((r) => r.status !== "fulfilled")) {
+          console.warn("Some pokemons could not be found!");
+        }
+        setCharacters(data.filter((p) => p.status === "fulfilled"));
+        setLoadingData(false);
       }
     })();
-    setMaxDisplayed(BATCH_SIZE);
   }, [selectedGeneration]);
+
+  const onFilterChange = (event) => setFilterString(event.target.value);
+
+  const shownCharacters = filterString
+    ? characters.filter(({ value }) => value.name.indexOf(filterString) !== -1)
+    : characters;
 
   return (
     <div css={pageStyle}>
       <h2>Available generations</h2>
+
       <div css={generationsStyle}>
         {generations.map(({ name }) => (
           <div
@@ -132,23 +127,24 @@ const PokemonList = () => {
         ))}
       </div>
 
+      <div css={searchStyle}>
+        Search by:{" "}
+        <input type="text" value={filterString} onChange={onFilterChange} />
+      </div>
+
+      {loadingData && (
+        <div>
+          <h3>Loading data...</h3>
+        </div>
+      )}
+
       <div css={pokemonListStyle}>
-        {characters.slice(0, maxDisplayed).map((c) => (
-          <Link to={`pokemon/${getPokemonIdFromUrl(c.url)}`} key={c.name}>
-            <PokemonDetails name={c.name} url={c.url} />
+        {shownCharacters.map(({ value }) => (
+          <Link to={`pokemon/${value.id}`} key={value.name}>
+            <PokemonDetails details={value} />
           </Link>
         ))}
       </div>
-      {maxDisplayed < characters.length && (
-        <div>
-          <button
-            type="button"
-            onClick={() => setMaxDisplayed(maxDisplayed + BATCH_SIZE)}
-          >
-            Load more
-          </button>
-        </div>
-      )}
     </div>
   );
 };
